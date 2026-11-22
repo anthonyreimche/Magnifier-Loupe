@@ -1,0 +1,13 @@
+{
+  "id": "magnifier-loupe",
+  "name": "Magnifier Loupe",
+  "version": "1.0.0",
+  "description": "A round magnifier that follows the pointer over the Develop photo or the Library grid, at 100, 200, 400 or 800 %. In Develop it shows your edit at the photo's own pixels whatever the zoom; it never takes a click, a pan or a zoom.",
+  "author": "Anthony Reimche",
+  "main": "dist/index.js",
+  "license": "GPL-3.0-or-later",
+  "categories": ["Develop", "Library", "Workflow"],
+  "keywords": ["loupe", "magnifier", "magnify", "zoom", "focus check", "culling", "100%"],
+  "repository": "anthonyreimche/Magnifier-Loupe",
+  "minAppVersion": "3.2.7"
+}
