@@ -6,13 +6,13 @@
 
 import { uiZoomOf, watchPointer, watchWheel } from "./input";
 import { Lens, paintLens, placeLens, type Picture } from "./Lens";
-import { containedPoint, layoutPoint, type Point } from "./model";
+import { containedPoint, type Point } from "./model";
 import { React, api } from "./rt";
 import { loupeStore, setShownAt } from "./state";
 
 export function LibraryLoupe() {
   const on = loupeStore()((s) => s.on);
-  const inLibrary = api.stores.useUIStore((s) => s.activeModule === "library");
+  const inLibrary = api.navigation.useCurrent() === "library";
   return on && inLibrary ? api.reactDom.createPortal(<LibraryLens />, document.body) : null;
 }
 
@@ -87,7 +87,7 @@ function libraryLoupe(read: () => View) {
   let frame = 0;
 
   const toLayout = (root: HTMLDivElement, client: Point) =>
-    layoutPoint(client, root.getBoundingClientRect(), root.offsetWidth);
+    api.develop.framePoint(root, client.x, client.y);
   const toClient = (root: HTMLDivElement, at: Point): Point => {
     const box = root.getBoundingClientRect();
     const zoom = uiZoomOf(root);

@@ -47,10 +47,10 @@ type FakeMembers = Pick<SafelightAPI, "version" | "extensionId" | "react" | "reg
   cursors: Pick<SafelightAPI["cursors"], "resolve">;
   ui: Pick<SafelightAPI["ui"], "tokens">;
   reactDom: SafelightAPI["reactDom"];
-  develop: Pick<SafelightAPI["develop"], "useDevelopOverlay" | "captureRegion">;
+  navigation: Pick<SafelightAPI["navigation"], "current" | "useCurrent">;
+  develop: Pick<SafelightAPI["develop"], "useDevelopOverlay" | "captureRegion" | "framePoint">;
   stores: {
     useDevelopStore: Store<DevelopSlice>;
-    useUIStore: Store<UiSlice>;
     useCatalogStore: Store<CatalogSlice>;
     create: SafelightAPI["stores"]["create"];
   };
@@ -134,7 +134,13 @@ export function fakeApi(): Rig {
     cursors: { resolve: (token) => token },
     ui: { tokens: TOKENS },
     reactDom: { createPortal },
+    navigation: { current: () => ui.getState().activeModule, useCurrent: () => ui((s) => s.activeModule) },
     develop: {
+      framePoint: (el, clientX, clientY) => {
+        const box = el.getBoundingClientRect();
+        const ratio = box.width > 0 && el instanceof HTMLElement ? el.offsetWidth / box.width : 1;
+        return { x: (clientX - box.left) * ratio, y: (clientY - box.top) * ratio };
+      },
       useDevelopOverlay: () => overlay(),
       captureRegion: (request) =>
         new Promise<RegionCapture | null>((resolve) => {
@@ -148,7 +154,7 @@ export function fakeApi(): Rig {
           });
         }),
     },
-    stores: { useDevelopStore: develop, useUIStore: ui, useCatalogStore: catalog, create },
+    stores: { useDevelopStore: develop, useCatalogStore: catalog, create },
   };
 
   return {

@@ -11,7 +11,7 @@
 
 import { uiZoomOf, watchPointer, watchWheel } from "./input";
 import { Lens, paintLens, placeLens } from "./Lens";
-import { covers, inside, layoutPoint, lensDiameter, patchSize, type Point, type Rect } from "./model";
+import { covers, inside, lensDiameter, patchSize, type Point, type Rect } from "./model";
 import { React, api } from "./rt";
 import type { RegionCapture } from "./safelight";
 import { loupeStore, setShownAt } from "./state";
@@ -186,7 +186,7 @@ function developLoupe(read: () => View, showSpace: (space: PredefinedColorSpace)
 
   function moved(client: Point | null): void {
     if (!elements) return;
-    pointer = client && layoutPoint(client, elements.root.getBoundingClientRect(), elements.root.offsetWidth);
+    pointer = client && api.develop.framePoint(elements.root, client.x, client.y);
     schedule();
   }
 
@@ -196,7 +196,7 @@ function developLoupe(read: () => View, showSpace: (space: PredefinedColorSpace)
     if (!elements) return false;
     const v = read();
     if (!v.parkedAt) return !!centre();
-    const at = layoutPoint(client, elements.root.getBoundingClientRect(), elements.root.offsetWidth);
+    const at = api.develop.framePoint(elements.root, client.x, client.y);
     return Math.hypot(at.x - v.parkedAt.x, at.y - v.parkedAt.y) <= v.diameter / 2;
   }
 

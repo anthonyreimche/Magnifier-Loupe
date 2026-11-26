@@ -86,10 +86,7 @@ export function setShownAt(module: LoupeModule, at: Point | null): void {
 /** The module in front with something to magnify, or null: Develop with a
  *  photo open (a popped-out Develop window included), or the Library. */
 export function activeModule(): LoupeModule | null {
-  const detached = new URLSearchParams(window.location.search).get("detached");
-  if (detached === "develop") return api.stores.useDevelopStore.getState().photoId ? "develop" : null;
-  if (detached) return null;
-  const module = api.stores.useUIStore.getState().activeModule;
+  const module = api.navigation.current();
   if (module === "library") return "library";
   if (module === "develop" && api.stores.useDevelopStore.getState().photoId) return "develop";
   return null;

@@ -4,6 +4,7 @@
 // are taken, and only while the loupe is shown where the wheel rolls.
 
 import { wheelGesture, wheelStepper, type Point } from "./model";
+import { api } from "./rt";
 import { loupeStore } from "./state";
 
 /** What a window pointer event says: its client point, or null when it is
@@ -16,10 +17,12 @@ export function pointerOver(e: PointerEvent): Point | null {
 }
 
 /** The interface scale (CSS zoom) an element is drawn at: its on-screen width
- *  over its layout width. */
+ *  over its layout width, which framePoint measures along the element's top
+ *  edge. */
 export function uiZoomOf(el: HTMLElement): number {
-  const width = el.getBoundingClientRect().width;
-  return width > 0 && el.offsetWidth > 0 ? width / el.offsetWidth : 1;
+  const box = el.getBoundingClientRect();
+  const layoutWidth = api.develop.framePoint(el, box.right, box.top).x - api.develop.framePoint(el, box.left, box.top).x;
+  return box.width > 0 && layoutWidth > 0 ? box.width / layoutWidth : 1;
 }
 
 // Where the pointer is, kept while the extension runs, so a loupe turned on

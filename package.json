@@ -1,7 +1,7 @@
 {
   "name": "safelight-magnifier-loupe",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Magnifier Loupe extension for Safelight: a round magnifier that follows the pointer over the Develop photo or the Library grid, at 100 to 800 %.",
   "type": "module",
   "scripts": {

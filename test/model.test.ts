@@ -12,7 +12,6 @@ import {
   covers,
   inside,
   MAX_PATCH,
-  layoutPoint,
   lensDiameter,
   magnificationLabel,
   patchSize,
@@ -102,12 +101,6 @@ describe("placement", () => {
 });
 
 describe("pointer and picture coordinates", () => {
-  it("maps a client point into layout pixels, undoing the interface scale", () => {
-    const rect = { left: 100, top: 50, width: 600 };
-    expect(layoutPoint({ x: 220, y: 110 }, rect, 500)).toEqual({ x: 100, y: 50 });
-    expect(layoutPoint({ x: 220, y: 110 }, rect, 600)).toEqual({ x: 120, y: 60 });
-  });
-
   it("finds the picture pixel under a point of a contained image, or null in its margins", () => {
     // A 400×200 picture in a 200×200 box: 100 px tall, from y = 50.
     const box = { left: 10, top: 20, width: 200, height: 200 };

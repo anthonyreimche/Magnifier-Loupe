@@ -37,14 +37,7 @@ function d(e, t, n, r) {
 		dh: e.height * n
 	};
 }
-function f(e, t, n) {
-	let r = t.width > 0 ? n / t.width : 1;
-	return {
-		x: (e.x - t.left) * r,
-		y: (e.y - t.top) * r
-	};
-}
-function p(e, t, n, r) {
+function f(e, t, n, r) {
 	if (t <= 0 || n <= 0 || e.width <= 0 || e.height <= 0) return null;
 	let i = Math.min(e.width / t, e.height / n), a = e.left + (e.width - t * i) / 2, o = e.top + (e.height - n * i) / 2, s = (r.x - a) / i, c = (r.y - o) / i;
 	return s < 0 || c < 0 || s > t || c > n ? null : {
@@ -52,48 +45,48 @@ function p(e, t, n, r) {
 		y: c
 	};
 }
-var m = (e, t) => e.x >= t.x && e.y >= t.y && e.x < t.x + t.w && e.y < t.y + t.h;
-function h(e, t) {
+var p = (e, t) => e.x >= t.x && e.y >= t.y && e.x < t.x + t.w && e.y < t.y + t.h;
+function m(e, t) {
 	let n = t.span / 2, r = Math.max(0, t.centre.x - n), i = Math.max(0, t.centre.y - n), a = Math.min(t.frameWidth, t.centre.x + n), o = Math.min(t.frameHeight, t.centre.y + n);
 	return e.x <= r && e.y <= i && e.x + e.width >= a && e.y + e.height >= o;
 }
-var g = 50, _ = 250;
-function v() {
+var h = 50, g = 250;
+function _() {
 	let e = 0, t = -Infinity;
 	return (n, r) => {
-		if (r - t > _ && (e = 0), t = r, e += Math.abs(n.deltaX) > Math.abs(n.deltaY) ? n.deltaX : n.deltaY, Math.abs(e) < g) return 0;
+		if (r - t > g && (e = 0), t = r, e += Math.abs(n.deltaX) > Math.abs(n.deltaY) ? n.deltaX : n.deltaY, Math.abs(e) < h) return 0;
 		let i = e < 0 ? 1 : -1;
 		return e = 0, i;
 	};
 }
 //#endregion
-//#region src/ids.ts
-var y = "magnifier-loupe", b = `${y}.develop-overlay`, x = `${y}.develop-toolbar`, ee = `${y}.library-toolbar`, S = `${y}.toggle`, te = `${y}.park`, ne = `${y}.magnify-more`, re = `${y}.magnify-less`, C = "magnification", w = "diameter", T, E;
-function ie(e) {
-	E = e, T = e.react;
+//#region src/rt.ts
+var v, y;
+function b(e) {
+	y = e, v = e.react;
 }
 //#endregion
-//#region src/state.ts
-var D = null, O = null, k = {
+//#region src/ids.ts
+var x = "magnifier-loupe", ee = `${x}.develop-overlay`, te = `${x}.develop-toolbar`, ne = `${x}.library-toolbar`, S = `${x}.toggle`, C = `${x}.park`, w = `${x}.magnify-more`, T = `${x}.magnify-less`, E = "magnification", D = "diameter", O = null, k = null, A = {
 	develop: null,
 	library: null
 };
-function A() {
-	if (!D) throw Error("[magnifier-loupe] loupeStore() called before activate()");
-	return D;
-}
 function j() {
-	let t = E.settings.get(C, 2);
+	if (!O) throw Error("[magnifier-loupe] loupeStore() called before activate()");
+	return O;
+}
+function re() {
+	let t = y.settings.get(E, 2);
 	return e.includes(t) ? t : 2;
 }
 function M() {
-	let e = E.settings.get(w, 240);
+	let e = y.settings.get(D, 240);
 	return Number.isFinite(e) ? Math.min(480, Math.max(120, e)) : 240;
 }
-function ae() {
-	k.develop = null, k.library = null, D = E.stores.create((e, t) => ({
+function ie() {
+	A.develop = null, A.library = null, O = y.stores.create((e, t) => ({
 		on: !1,
-		magnification: j(),
+		magnification: re(),
 		diameter: M(),
 		parked: {
 			develop: null,
@@ -104,60 +97,57 @@ function ae() {
 			...t().parked,
 			[n]: r
 		} }),
-		stepMagnification: (e) => E.settings.set(C, i(t().magnification, e)),
-		stepDiameter: (e) => E.settings.set(w, o(t().diameter, e))
+		stepMagnification: (e) => y.settings.set(E, i(t().magnification, e)),
+		stepDiameter: (e) => y.settings.set(D, o(t().diameter, e))
 	}));
-	let e = D;
-	O = E.settings.onChange(() => e.setState({
-		magnification: j(),
+	let e = O;
+	k = y.settings.onChange(() => e.setState({
+		magnification: re(),
 		diameter: M()
 	}));
 }
-function oe() {
-	O?.(), O = null, D = null;
+function ae() {
+	k?.(), k = null, O = null;
 }
 function N(e, t) {
-	k[e] = t;
+	A[e] = t;
 }
 function P() {
-	let e = new URLSearchParams(window.location.search).get("detached");
-	if (e === "develop") return E.stores.useDevelopStore.getState().photoId ? "develop" : null;
-	if (e) return null;
-	let t = E.stores.useUIStore.getState().activeModule;
-	return t === "library" ? "library" : t === "develop" && E.stores.useDevelopStore.getState().photoId ? "develop" : null;
+	let e = y.navigation.current();
+	return e === "library" ? "library" : e === "develop" && y.stores.useDevelopStore.getState().photoId ? "develop" : null;
+}
+function oe() {
+	P() && j().getState().toggle();
 }
 function se() {
-	P() && A().getState().toggle();
-}
-function ce() {
-	let e = P(), t = A().getState();
-	e && t.on && (t.parked[e] ? t.setParked(e, null) : k[e] && t.setParked(e, k[e]));
+	let e = P(), t = j().getState();
+	e && t.on && (t.parked[e] ? t.setParked(e, null) : A[e] && t.setParked(e, A[e]));
 }
 function F(e) {
-	let t = A().getState();
+	let t = j().getState();
 	t.on && P() && t.stepMagnification(e);
 }
 //#endregion
 //#region src/input.ts
-function le(e) {
+function ce(e) {
 	return (e.target instanceof Element ? e.target : null)?.closest(".sl-floating-panel, [role='dialog'], [role='menu'], [role='listbox']") ? null : {
 		x: e.clientX,
 		y: e.clientY
 	};
 }
 function I(e) {
-	let t = e.getBoundingClientRect().width;
-	return t > 0 && e.offsetWidth > 0 ? t / e.offsetWidth : 1;
+	let t = e.getBoundingClientRect(), n = y.develop.framePoint(e, t.right, t.top).x - y.develop.framePoint(e, t.left, t.top).x;
+	return t.width > 0 && n > 0 ? t.width / n : 1;
 }
 var L = null, R = /* @__PURE__ */ new Set();
 function z(e) {
 	L = e;
 	for (let t of R) t(e);
 }
-var B = (e) => z(le(e)), V = (e) => {
+var B = (e) => z(ce(e)), V = (e) => {
 	e.relatedTarget || z(null);
 }, H = () => z(null);
-function ue() {
+function le() {
 	return window.addEventListener("pointermove", B, {
 		capture: !0,
 		passive: !0
@@ -172,7 +162,7 @@ function U(e) {
 	return R.add(e), e(L), () => void R.delete(e);
 }
 function W(e) {
-	let t = v(), n = (n) => {
+	let t = _(), n = (n) => {
 		let r = s(n);
 		if (!r || !e({
 			x: n.clientX,
@@ -181,7 +171,7 @@ function W(e) {
 		n.preventDefault(), n.stopPropagation();
 		let i = t(n, n.timeStamp);
 		if (i === 0) return;
-		let a = A().getState();
+		let a = j().getState();
 		r === "magnification" ? a.stepMagnification(i) : a.stepDiameter(i);
 	};
 	return window.addEventListener("wheel", n, {
@@ -206,7 +196,7 @@ function K(e, t, n) {
 }
 var q = "rgba(0, 0, 0, 0.55)", J = "rgba(255, 255, 255, 0.9)";
 function Y(e) {
-	let { diameter: t, magnification: n, parked: r, onDrag: i } = e, { tokens: o } = E.ui, s = t / 2, c = T.useRef(null), l = (e) => {
+	let { diameter: t, magnification: n, parked: r, onDrag: i } = e, { tokens: o } = y.ui, s = t / 2, c = v.useRef(null), l = (e) => {
 		if (e.button !== 0) return;
 		e.preventDefault(), e.stopPropagation();
 		let n = e.currentTarget;
@@ -227,7 +217,7 @@ function Y(e) {
 	}, d = (e) => {
 		c.current?.id === e.pointerId && (c.current = null, e.currentTarget.releasePointerCapture?.(e.pointerId));
 	};
-	return /* @__PURE__ */ T.createElement("div", {
+	return /* @__PURE__ */ v.createElement("div", {
 		ref: e.lensRef,
 		"data-loupe-lens": "",
 		style: {
@@ -240,7 +230,7 @@ function Y(e) {
 			pointerEvents: "none",
 			willChange: "transform"
 		}
-	}, /* @__PURE__ */ T.createElement("canvas", {
+	}, /* @__PURE__ */ v.createElement("canvas", {
 		key: e.colorSpace ?? "srgb",
 		ref: e.canvasRef,
 		style: {
@@ -250,7 +240,7 @@ function Y(e) {
 			borderRadius: "50%",
 			background: o.surface0
 		}
-	}), /* @__PURE__ */ T.createElement("svg", {
+	}), /* @__PURE__ */ v.createElement("svg", {
 		width: t,
 		height: t,
 		style: {
@@ -260,21 +250,21 @@ function Y(e) {
 			overflow: "visible",
 			pointerEvents: "none"
 		}
-	}, /* @__PURE__ */ T.createElement("circle", {
+	}, /* @__PURE__ */ v.createElement("circle", {
 		cx: s,
 		cy: s,
 		r: s,
 		fill: "none",
 		stroke: q,
 		strokeWidth: 3
-	}), /* @__PURE__ */ T.createElement("circle", {
+	}), /* @__PURE__ */ v.createElement("circle", {
 		cx: s,
 		cy: s,
 		r: s,
 		fill: "none",
 		stroke: J,
 		strokeWidth: 1
-	}), r && /* @__PURE__ */ T.createElement("circle", {
+	}), r && /* @__PURE__ */ v.createElement("circle", {
 		"data-loupe-grip": "",
 		cx: s,
 		cy: s,
@@ -284,13 +274,13 @@ function Y(e) {
 		strokeWidth: 12,
 		style: {
 			pointerEvents: "stroke",
-			cursor: E.cursors.resolve("pan")
+			cursor: y.cursors.resolve("pan")
 		},
 		onPointerDown: l,
 		onPointerMove: u,
 		onPointerUp: d,
 		onPointerCancel: d
-	}, /* @__PURE__ */ T.createElement("title", null, "Drag to move the loupe"))), /* @__PURE__ */ T.createElement("span", { style: {
+	}, /* @__PURE__ */ v.createElement("title", null, "Drag to move the loupe"))), /* @__PURE__ */ v.createElement("span", { style: {
 		position: "absolute",
 		left: "50%",
 		bottom: 8,
@@ -306,11 +296,11 @@ function Y(e) {
 }
 //#endregion
 //#region src/DevelopLoupe.tsx
-function de() {
-	return A()((e) => e.on) ? /* @__PURE__ */ T.createElement(fe, null) : null;
+function ue() {
+	return j()((e) => e.on) ? /* @__PURE__ */ v.createElement(de, null) : null;
 }
-function fe() {
-	let e = A(), t = e((e) => e.magnification), n = e((e) => e.diameter), r = e((e) => e.parked.develop), i = e((e) => e.setParked), { rect: a, imageRect: o, nonce: s, region: c, zoomScale: u } = E.develop.useDevelopOverlay(), d = c ? `${c.x} ${c.y} ${c.width} ${c.height}` : "", f = l(n, t * u, window.devicePixelRatio || 1), [p, m] = T.useState("srgb"), h = T.useRef(null), g = T.useRef(null), _ = T.useRef(null), v = T.useRef({
+function de() {
+	let e = j(), t = e((e) => e.magnification), n = e((e) => e.diameter), r = e((e) => e.parked.develop), i = e((e) => e.setParked), { rect: a, imageRect: o, nonce: s, region: c, zoomScale: u } = y.develop.useDevelopOverlay(), d = c ? `${c.x} ${c.y} ${c.width} ${c.height}` : "", f = l(n, t * u, window.devicePixelRatio || 1), [p, m] = v.useState("srgb"), h = v.useRef(null), g = v.useRef(null), _ = v.useRef(null), b = v.useRef({
 		rect: a,
 		imageRect: o,
 		diameter: f,
@@ -318,7 +308,7 @@ function fe() {
 		zoomScale: u,
 		parkedAt: r
 	});
-	v.current = {
+	b.current = {
 		rect: a,
 		imageRect: o,
 		diameter: f,
@@ -326,12 +316,12 @@ function fe() {
 		zoomScale: u,
 		parkedAt: r
 	};
-	let [y] = T.useState(() => pe(() => v.current, m));
-	return T.useEffect(() => {
+	let [x] = v.useState(() => fe(() => b.current, m));
+	return v.useEffect(() => {
 		let e = h.current, t = g.current;
-		if (e && t) return y.start(e, t, _);
-	}, [y]), T.useEffect(() => y.changed(), [y, p]), T.useEffect(() => y.stale(), [y, d]), T.useEffect(() => y.changed(), [
-		y,
+		if (e && t) return x.start(e, t, _);
+	}, [x]), v.useEffect(() => x.changed(), [x, p]), v.useEffect(() => x.stale(), [x, d]), v.useEffect(() => x.changed(), [
+		x,
 		s,
 		a,
 		o,
@@ -339,7 +329,7 @@ function fe() {
 		t,
 		u,
 		r
-	]), /* @__PURE__ */ T.createElement("div", {
+	]), /* @__PURE__ */ v.createElement("div", {
 		ref: h,
 		"data-loupe-root": "",
 		style: {
@@ -348,7 +338,7 @@ function fe() {
 			pointerEvents: "none",
 			overflow: "hidden"
 		}
-	}, /* @__PURE__ */ T.createElement(Y, {
+	}, /* @__PURE__ */ v.createElement(Y, {
 		diameter: f,
 		magnification: t,
 		parked: !!r,
@@ -356,7 +346,7 @@ function fe() {
 		lensRef: g,
 		canvasRef: _,
 		onDrag: (e) => {
-			let t = v.current.parkedAt;
+			let t = b.current.parkedAt;
 			t && i("develop", {
 				x: t.x + e.x,
 				y: t.y + e.y
@@ -364,22 +354,22 @@ function fe() {
 		}
 	}));
 }
-function pe(e, t) {
-	let n = null, r = null, i = null, a = 0, o = -1, s = -1, l = "", u = !1, d = 0, p = () => {
+function fe(e, t) {
+	let n = null, r = null, i = null, a = 0, o = -1, s = -1, l = "", u = !1, d = 0, f = () => {
 		let t = e();
-		return t.parkedAt ? t.parkedAt : r && t.rect && m(r, t.rect) ? r : null;
-	}, g = (t) => {
+		return t.parkedAt ? t.parkedAt : r && t.rect && p(r, t.rect) ? r : null;
+	}, h = (t) => {
 		let n = e().imageRect;
 		return n && n.w > 0 && n.h > 0 ? {
 			x: (t.x - n.x) / n.w,
 			y: (t.y - n.y) / n.h
 		} : null;
 	};
-	function _() {
+	function g() {
 		if (d = 0, !n) return;
-		let t = e(), r = p();
+		let t = e(), r = f();
 		if (N("develop", r), K(n.lens, r, t.diameter), !r) return;
-		let a = g(r), o = window.devicePixelRatio || 1, s = {
+		let a = h(r), o = window.devicePixelRatio || 1, s = {
 			diameter: t.diameter,
 			zoom: t.magnification * t.zoomScale,
 			uiZoom: I(n.root),
@@ -393,10 +383,10 @@ function pe(e, t) {
 			},
 			colorSpace: i.colorSpace
 		} : null, l = n.canvas.current;
-		l && G(l, s, c, c?.colorSpace), a && v(a, o);
+		l && G(l, s, c, c?.colorSpace), a && _(a, o);
 	}
-	function v(r, d) {
-		let f = E.develop.captureRegion;
+	function _(r, d) {
+		let f = y.develop.captureRegion;
 		if (!f || u || !i && s === a) return;
 		let p = e();
 		if (i && o === a) {
@@ -409,34 +399,34 @@ function pe(e, t) {
 				frameWidth: i.frameWidth,
 				frameHeight: i.frameHeight
 			};
-			if (h(i.rect, t)) return;
+			if (m(i.rect, t)) return;
 		}
-		let m = c(p.diameter, p.magnification * p.zoomScale, d), g = `${a} ${m} ${r.x} ${r.y}`;
+		let h = c(p.diameter, p.magnification * p.zoomScale, d), g = `${a} ${h} ${r.x} ${r.y}`;
 		if (g === l) return;
 		l = g;
-		let _ = a, v = r.x >= 0 && r.x <= 1 && r.y >= 0 && r.y <= 1;
+		let _ = a, b = r.x >= 0 && r.x <= 1 && r.y >= 0 && r.y <= 1;
 		u = !0, f({
 			x: r.x,
 			y: r.y,
-			width: m,
-			height: m
+			width: h,
+			height: h
 		}).then((e) => {
-			n ? (i?.bitmap.close(), i = e, o = _, !e && v && (s = _), e && t(e.colorSpace)) : e?.bitmap.close();
+			n ? (i?.bitmap.close(), i = e, o = _, !e && b && (s = _), e && t(e.colorSpace)) : e?.bitmap.close();
 		}, (e) => console.warn("[magnifier-loupe] couldn't draw the patch:", e)).finally(() => {
-			u = !1, y();
+			u = !1, v();
 		});
 	}
-	function y() {
-		!d && n && (d = requestAnimationFrame(_));
+	function v() {
+		!d && n && (d = requestAnimationFrame(g));
 	}
 	function b(e) {
-		n && (r = e && f(e, n.root.getBoundingClientRect(), n.root.offsetWidth), y());
+		n && (r = e && y.develop.framePoint(n.root, e.x, e.y), v());
 	}
 	function x(t) {
 		if (!n) return !1;
 		let r = e();
-		if (!r.parkedAt) return !!p();
-		let i = f(t, n.root.getBoundingClientRect(), n.root.offsetWidth);
+		if (!r.parkedAt) return !!f();
+		let i = y.develop.framePoint(n.root, t.x, t.y);
 		return Math.hypot(i.x - r.parkedAt.x, i.y - r.parkedAt.y) <= r.diameter / 2;
 	}
 	return {
@@ -449,31 +439,31 @@ function pe(e, t) {
 			let o = [
 				U(b),
 				W(x),
-				E.stores.useDevelopStore.subscribe((e, t) => {
-					e.photoId !== t.photoId && (i?.bitmap.close(), i = null), (e.photoId !== t.photoId || e.params !== t.params || e.paramBag !== t.paramBag || e.previewParams !== t.previewParams || e.previewParamBag !== t.previewParamBag || e.histogram !== t.histogram || e.sourceSize !== t.sourceSize) && (a++, y());
+				y.stores.useDevelopStore.subscribe((e, t) => {
+					e.photoId !== t.photoId && (i?.bitmap.close(), i = null), (e.photoId !== t.photoId || e.params !== t.params || e.paramBag !== t.paramBag || e.previewParams !== t.previewParams || e.previewParamBag !== t.previewParamBag || e.histogram !== t.histogram || e.sourceSize !== t.sourceSize) && (a++, v());
 				})
 			];
-			return y(), () => {
+			return v(), () => {
 				for (let e of o) e();
 				d && cancelAnimationFrame(d), d = 0, n = null, i?.bitmap.close(), i = null, N("develop", null);
 			};
 		},
 		changed() {
-			y();
+			v();
 		},
 		stale() {
-			a++, y();
+			a++, v();
 		}
 	};
 }
 //#endregion
 //#region src/LibraryLoupe.tsx
-function me() {
-	let e = A()((e) => e.on), t = E.stores.useUIStore((e) => e.activeModule === "library");
-	return e && t ? E.reactDom.createPortal(/* @__PURE__ */ T.createElement(he, null), document.body) : null;
+function pe() {
+	let e = j()((e) => e.on), t = y.navigation.useCurrent() === "library";
+	return e && t ? y.reactDom.createPortal(/* @__PURE__ */ v.createElement(me, null), document.body) : null;
 }
-function he() {
-	let e = A(), t = e((e) => e.magnification), n = e((e) => e.diameter), r = e((e) => e.parked.library), i = e((e) => e.setParked), a = T.useRef(null), o = T.useRef(null), s = T.useRef(null), c = T.useRef({
+function me() {
+	let e = j(), t = e((e) => e.magnification), n = e((e) => e.diameter), r = e((e) => e.parked.library), i = e((e) => e.setParked), a = v.useRef(null), o = v.useRef(null), s = v.useRef(null), c = v.useRef({
 		diameter: n,
 		magnification: t,
 		parkedAt: r
@@ -483,16 +473,16 @@ function he() {
 		magnification: t,
 		parkedAt: r
 	};
-	let [l] = T.useState(() => ge(() => c.current));
-	return T.useEffect(() => {
+	let [l] = v.useState(() => he(() => c.current));
+	return v.useEffect(() => {
 		let e = a.current, t = o.current, n = s.current;
 		if (e && t && n) return l.start(e, t, n);
-	}, [l]), T.useEffect(() => l.changed(), [
+	}, [l]), v.useEffect(() => l.changed(), [
 		l,
 		n,
 		t,
 		r
-	]), /* @__PURE__ */ T.createElement("div", {
+	]), /* @__PURE__ */ v.createElement("div", {
 		ref: a,
 		"data-loupe-root": "",
 		style: {
@@ -502,7 +492,7 @@ function he() {
 			pointerEvents: "none",
 			overflow: "hidden"
 		}
-	}, /* @__PURE__ */ T.createElement(Y, {
+	}, /* @__PURE__ */ v.createElement(Y, {
 		diameter: n,
 		magnification: t,
 		parked: !!r,
@@ -520,7 +510,7 @@ function he() {
 function X(e) {
 	let t = (document.elementFromPoint?.(e.x, e.y))?.closest("[data-photo-id]")?.querySelector("img");
 	if (!t || !t.complete || t.naturalWidth <= 0) return null;
-	let n = p(t.getBoundingClientRect(), t.naturalWidth, t.naturalHeight, e);
+	let n = f(t.getBoundingClientRect(), t.naturalWidth, t.naturalHeight, e);
 	return n && {
 		image: t,
 		rect: {
@@ -533,8 +523,8 @@ function X(e) {
 		colorSpace: "srgb"
 	};
 }
-function ge(e) {
-	let t = null, n = null, r = 0, i = (e, t) => f(t, e.getBoundingClientRect(), e.offsetWidth), a = (e, t) => {
+function he(e) {
+	let t = null, n = null, r = 0, i = (e, t) => y.develop.framePoint(e, t.x, t.y), a = (e, t) => {
 		let n = e.getBoundingClientRect(), r = I(e);
 		return {
 			x: n.left + t.x * r,
@@ -575,7 +565,7 @@ function ge(e) {
 					n = e, s();
 				}),
 				W(c),
-				E.stores.useCatalogStore.subscribe((e, t) => {
+				y.stores.useCatalogStore.subscribe((e, t) => {
 					e.photos !== t.photos && s();
 				}),
 				() => window.removeEventListener("scroll", o, !0),
@@ -597,7 +587,7 @@ function ge(e) {
 //#endregion
 //#region src/Toolbar.tsx
 function Z() {
-	let e = (e) => E.keybindings.getBinding(e), t = e(S), n = e(te), r = e(ne), i = e(re);
+	let e = (e) => y.keybindings.getBinding(e), t = e(S), n = e(C), r = e(w), i = e(T);
 	return [
 		`Magnifier loupe${t ? ` (${t})` : ""}: a closer look at the photo under the pointer`,
 		`Magnification: Alt+wheel${r && i ? `, ${r} and ${i}` : ""}`,
@@ -605,9 +595,9 @@ function Z() {
 		`Park it where it is${n ? ` (${n})` : ""}, then drag its ring to move it`
 	].join("\n");
 }
-function _e() {
-	let e = A()((e) => e.on), t = A()((e) => e.toggle), [n, r] = T.useState(!1), { tokens: i } = E.ui, a = Z();
-	return /* @__PURE__ */ T.createElement("button", {
+function ge() {
+	let e = j()((e) => e.on), t = j()((e) => e.toggle), [n, r] = v.useState(!1), { tokens: i } = y.ui, a = Z();
+	return /* @__PURE__ */ v.createElement("button", {
 		type: "button",
 		onClick: t,
 		onMouseEnter: () => r(!0),
@@ -621,9 +611,9 @@ function _e() {
 		}
 	}, "Loupe");
 }
-function ve() {
-	let e = A()((e) => e.on), t = A()((e) => e.toggle), { tokens: n } = E.ui, r = Z();
-	return /* @__PURE__ */ T.createElement("button", {
+function _e() {
+	let e = j()((e) => e.on), t = j()((e) => e.toggle), { tokens: n } = y.ui, r = Z();
+	return /* @__PURE__ */ v.createElement("button", {
 		type: "button",
 		onClick: t,
 		title: r,
@@ -638,54 +628,54 @@ function ve() {
 }
 //#endregion
 //#region src/index.tsx
-function ye() {
-	return /* @__PURE__ */ T.createElement(T.Fragment, null, /* @__PURE__ */ T.createElement(ve, null), /* @__PURE__ */ T.createElement(me, null));
+function ve() {
+	return /* @__PURE__ */ v.createElement(v.Fragment, null, /* @__PURE__ */ v.createElement(_e, null), /* @__PURE__ */ v.createElement(pe, null));
 }
 var Q = null, $ = null;
-function be(e) {
-	ie(e), ae(), $ = ue(), Q = e, e.registerSlot({
-		id: b,
+function ye(e) {
+	b(e), ie(), $ = le(), Q = e, e.registerSlot({
+		id: ee,
 		slot: "develop-canvas-overlay",
-		component: de,
+		component: ue,
 		order: 200
 	}), e.registerSlot({
-		id: x,
+		id: te,
 		slot: "develop-toolbar",
-		component: _e
+		component: ge
 	}), e.registerSlot({
-		id: ee,
+		id: ne,
 		slot: "library-toolbar",
-		component: ye
+		component: ve
 	}), e.registerKeybinding({
 		id: S,
 		label: "Magnifier loupe",
 		category: "General",
 		defaultCombo: "`",
-		handler: se
+		handler: oe
 	}), e.registerKeybinding({
-		id: te,
+		id: C,
 		label: "Park or free the loupe",
 		category: "General",
 		defaultCombo: "Shift+`",
-		handler: ce
+		handler: se
 	}), e.registerKeybinding({
-		id: ne,
+		id: w,
 		label: "Loupe: more magnification",
 		category: "General",
 		defaultCombo: "Alt+=",
 		handler: () => F(1)
 	}), e.registerKeybinding({
-		id: re,
+		id: T,
 		label: "Loupe: less magnification",
 		category: "General",
 		defaultCombo: "Alt+-",
 		handler: () => F(-1)
 	});
 }
-function xe() {
-	Q && (Q = null, $?.(), $ = null, oe());
+function be() {
+	Q && (Q = null, $?.(), $ = null, ae());
 }
 //#endregion
-export { y as EXTENSION_ID, be as activate, xe as deactivate };
+export { x as EXTENSION_ID, ye as activate, be as deactivate };
 
 //# sourceMappingURL=index.js.map

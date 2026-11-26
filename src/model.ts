@@ -114,14 +114,6 @@ export function placement(source: SourceRect, centre: Point, scale: number, canv
   };
 }
 
-/** A client point in an element's layout pixels: client coordinates are on
- *  screen, so under the interface scale (CSS zoom) they are divided by it,
- *  which the element's own visual width over its layout width measures. */
-export function layoutPoint(client: Point, rect: Pick<DOMRect, "left" | "top" | "width">, offsetWidth: number): Point {
-  const ratio = rect.width > 0 ? offsetWidth / rect.width : 1;
-  return { x: (client.x - rect.left) * ratio, y: (client.y - rect.top) * ratio };
-}
-
 /** The pixel of a `naturalWidth` × `naturalHeight` picture under client point
  *  `client`, the picture contained (object-fit: contain) in `box`; null in the
  *  box's margins or for a picture with no pixels. */
